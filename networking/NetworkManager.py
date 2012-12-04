@@ -7,6 +7,7 @@ import hashlib
 import string
 import Utils
 import sys
+import random
 from networking import PacketSenderManager
 from Crypto.Random import _UserFriendlyRNG
 from Crypto.Util import asn1
@@ -18,10 +19,16 @@ EntityID = 0
 
 class ServerConnection(threading.Thread):
     
+    posX = None
+    posY = None
+    posZ = None
+    yaw = None
+    pitch = None
+    isConnected = False
+    
     def __init__(self, window, username, sessionID, server, port, options=None):
         threading.Thread.__init__(self)
         self.options = options
-        self.isConnected = False
         self.username = username
         self.sessionID = sessionID
         self.server = server
@@ -151,6 +158,8 @@ class EncryptedSocketObjectHandler():
                 
 class PacketListener(threading.Thread):
     
+    lastMoveTick = 0
+    
     def __init__(self, connection, window, socket, FileObject):
         threading.Thread.__init__(self)
         self.connection = connection
@@ -221,6 +230,14 @@ class PacketListener(threading.Thread):
                 packet = PacketListenerManager.handle09(self.FileObject)
             elif(response == "\x0D"):
                 packet = PacketListenerManager.handle0D(self.FileObject)
+                self.connection.posX = packet['x']
+                self.connection.posY = packet['y']
+                self.connection.posZ = packet['z']
+                self.connection.yaw = packet['yaw']
+                self.connection.pitch = packet['pitch']
+                PacketSenderManager.send0D(self.socket, self.connection.posX, self.connection.posY, self.connection.posZ,
+                                            (self.connection.posY + 1.6), self.connection.yaw, self.connection.pitch, False)
+                PacketSenderManager.sendCA(self.socket, 15, 12, 25)
             elif(response == "\x11"):
                 packet = PacketListenerManager.handle11(self.FileObject)
             elif(response == "\x12"):
@@ -326,7 +343,7 @@ class PacketListener(threading.Thread):
                 if (not self.encryptedConnection):
                     self.enableEncryption()
                     self.connection.isConnected = True
-                    PacketSenderManager.sendCD(self.socket, 0)
+                    PacketSenderManager.sendCD(self.socket, 0)       
             elif(response == "\xFF"):
                 packet = PacketListenerManager.handleFF(self.FileObject)
                 print "Disconnected: " + packet['Reason']
@@ -342,5 +359,18 @@ class PacketListener(threading.Thread):
                     f.close()
                 sys.exit(1)
                 break
+            
+            if(self.lastMoveTick == 0):
+                if(self.connection.posX != None):
+                    if (self.connection.posY < 128):
+                        self.connection.posY += 2
+                    self.connection.posX += random.randint(-2, 3)
+                    self.connection.posZ += random.randint(-2, 3)
+                    PacketSenderManager.send0D(self.socket, self.connection.posX, self.connection.posY, self.connection.posZ,
+                                                (self.connection.posY + 1.6), self.connection.yaw, self.connection.pitch, False)
+                self.lastMoveTick = 200
+            else:
+                self.lastMoveTick -= 1
+            
             if(self.connection.options != None and self.connection.options.dumpPackets):
                 f.write(hex(ord(response)) + " : " + str(packet) + '\n')

@@ -30,6 +30,36 @@ def send03(socket, message):
     #-----string - message-----#
     DataUtil.sendString(socket, message)
     
+def send0B(socket, x, y, z, stance, onGround):
+    #packet id
+    socket.send("\x0B")
+    
+    DataUtil.sendDouble(socket, x)
+    DataUtil.sendDouble(socket, y)
+    DataUtil.sendDouble(socket, stance)
+    DataUtil.sendDouble(socket, z)
+    DataUtil.sendBoolean(socket, onGround)
+    
+def send0D(socket, x, y, z, stance, yaw, pitch, onGround):
+    #packet id
+    socket.send("\x0D")
+    
+    DataUtil.sendDouble(socket, x)
+    DataUtil.sendDouble(socket, y)
+    DataUtil.sendDouble(socket, stance)
+    DataUtil.sendDouble(socket, z)
+    DataUtil.sendFloat(socket, yaw)
+    DataUtil.sendFloat(socket, pitch)
+    DataUtil.sendBoolean(socket, onGround)
+    
+def sendCA(socket, flags, flySpeed, walkSpeed):
+    #packet id
+    socket.send("\xCA")
+    
+    DataUtil.sendByte(socket, flags)
+    DataUtil.sendByte(socket, flySpeed)
+    DataUtil.sendByte(socket, walkSpeed)
+    
 def sendCD(socket, payload):
     #packet id
     socket.send("\xCD")

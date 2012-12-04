@@ -64,13 +64,13 @@ def sendLong(socket, value):
     socket.send(struct.pack('>q', value))
     
 def sendDouble(socket, value):
-    socket.send(struct.pack('>d'), value)
+    socket.send(struct.pack('>d', value))
     
 def sendString(socket, value):
     if (type(value) is not types.StringType):
         value = str(value)
     socket.send(struct.pack('>h', value.__len__()))
-    socket.send(value.encode('utf-16be'))    
+    socket.send(value.encode('utf-16be'))
 
 def readEntityMetadata(FileObject):
     metadata = {}

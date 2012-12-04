@@ -28,7 +28,13 @@ if __name__ == "__main__":
                   action="store_true", default=False,
                   help="run in offline mode i.e don't attempt to auth via minecraft.net")
     
+    parser.add_option("-b", "--bot-count", dest="bots", default=25, type="int",
+                      help="the number of bots to connect")
+    
     (options, args) = parser.parse_args()
+    
+    if(options.bots < 0):
+        print("Invalid bot count!")
                 
     if(options.username != ""):
         user = options.username
@@ -64,15 +70,23 @@ if __name__ == "__main__":
     else:
         host = serverAddress
         port = 25565
-    connection = NetworkManager.ServerConnection(None, user, sessionid, host, port, options)
-    connection.start()
+    
+    index = 0
+    connections = []
+    for i in range(options.bots):
+        connection = NetworkManager.ServerConnection(None, "bot_" + str(index), sessionid, host, port, options)
+        connection.start()
+        connections.append(connection)
+        index = index + 1
+        
     while True:
         try:
             chat_input = raw_input()
             if (connection.isConnected):
                 PacketSenderManager.send03(connection.grabSocket(), chat_input) 
             else:
-                pass       
+                pass
         except KeyboardInterrupt, e:
-            connection.disconnect()
+            for connection in connections:
+                connection.disconnect()
             sys.exit(1)
