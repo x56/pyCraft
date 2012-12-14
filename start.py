@@ -71,13 +71,12 @@ if __name__ == "__main__":
         host = serverAddress
         port = 25565
     
-    index = 0
+    print "Connecting with " + str(options.bots) + " bots"
     connections = []
     for i in range(options.bots):
-        connection = NetworkManager.ServerConnection(None, "bot_" + str(index), sessionid, host, port, options)
+        connection = NetworkManager.ServerConnection(None, "bot_" + str(i), sessionid, host, port, options)
         connection.start()
         connections.append(connection)
-        index = index + 1
         
     while True:
         try:
