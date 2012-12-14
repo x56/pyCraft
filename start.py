@@ -75,6 +75,7 @@ if __name__ == "__main__":
     connections = []
     for i in range(options.bots):
         connection = NetworkManager.ServerConnection(None, "bot_" + str(i), sessionid, host, port, options)
+        connection.setDaemon(True)
         connection.start()
         connections.append(connection)
         

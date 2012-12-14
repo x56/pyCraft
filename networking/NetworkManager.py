@@ -97,6 +97,7 @@ class ServerConnection(threading.Thread):
                     
                     #Instantiate our main packet listener
                     self.listener = PacketListener(self, self.window, self.socket, self.FileObject)
+                    self.listener.setDaemon(True)
                     self.listener.start()
                     
                     #Encrypt the verification token from earlier along with our shared secret with the server's rsa key
@@ -113,6 +114,7 @@ class ServerConnection(threading.Thread):
                 print "Server is in offline mode"
                 #Instantiate our main packet listener
                 self.listener = PacketListener(self, self.window, self.socket, self.FileObject)
+                self.listener.setDaemon(True)
                 self.listener.start()
                 
                 #Encrypt the verification token from earlier along with our shared secret with the server's rsa key
