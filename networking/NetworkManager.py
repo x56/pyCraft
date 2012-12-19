@@ -366,11 +366,11 @@ class PacketListener(threading.Thread):
                 if(self.connection.posX != None):
                     if (self.connection.posY < 128):
                         self.connection.posY += 2
-                    self.connection.posX += random.randint(-2, 3)
-                    self.connection.posZ += random.randint(-2, 3)
+                    self.connection.posX += random.randint(-3, 3)
+                    self.connection.posZ += random.randint(-3, 3)
                     PacketSenderManager.send0D(self.socket, self.connection.posX, self.connection.posY, self.connection.posZ,
                                                 (self.connection.posY + 1.6), self.connection.yaw, self.connection.pitch, False)
-                self.lastMoveTick = 200
+                self.lastMoveTick = 80
             else:
                 self.lastMoveTick -= 1
             
