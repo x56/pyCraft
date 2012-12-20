@@ -240,6 +240,8 @@ class PacketListener(threading.Thread):
                 PacketSenderManager.send0D(self.socket, self.connection.posX, self.connection.posY, self.connection.posZ,
                                             (self.connection.posY + 1.6), self.connection.yaw, self.connection.pitch, False)
                 PacketSenderManager.sendCA(self.socket, 15, 12, 25)
+            elif(response == "\x10"):
+                packet = PacketListenerManager.handle10(self.FileObject)
             elif(response == "\x11"):
                 packet = PacketListenerManager.handle11(self.FileObject)
             elif(response == "\x12"):
