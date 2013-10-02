@@ -15,6 +15,10 @@ from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES
 from Crypto.Cipher import PKCS1_v1_5
 
+
+import serial
+ser = serial.Serial('/dev/tty.usbmodem411', 9600, timeout=1)
+
 EntityID = 0
 
 
@@ -200,7 +204,11 @@ class PacketListener(threading.Thread):
                 else:
                     filtered_string = packet['Message']
                 print filtered_string
-
+                if filtered_string.find("@ whispers to you: lamp on") != -1:
+                    ser.write('A')
+                if filtered_string.find("@ whispers to you: lamp off") != -1:
+                    ser.write('B')
+                    
             elif (response == "\x04"):
                 packet = PacketListenerManager.handle04(self.FileObject)
             elif (response == "\x05"):
